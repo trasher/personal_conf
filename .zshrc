@@ -16,6 +16,7 @@ HISTFILE=~/.zshhistory
 HISTSIZE=50000
 SAVEHIST=50000
 setopt HIST_IGNORE_SPACE
+setopt hist_ignore_all_dups
 setopt appendhistory
 bindkey -v
 # End of lines configured by zsh-newuser-install
