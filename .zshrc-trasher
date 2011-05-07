@@ -1,0 +1,7 @@
+# This will set the default prompt to the adam1 theme
+prompt adam1
+
+#extension based aliases
+alias -s pdf="evince"
+alias -s {doc,ppt,xls}="libreoffice"
+alias -s {odt,ods,odp}="libreoffice"
