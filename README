@@ -1,0 +1,8 @@
+ZSH main configuration files, user specifi configuration files,
+utilities functions and theme for my personal use.
+
+Each .zshrc-{username} contains specific user information. Yous should just 
+copy or create the following symlinks:
+ln -s .zshrc-trasher ~/.zshrc-${whoami}
+ln -s .zshrc ~/
+ln -s .zsh_functions ~/
