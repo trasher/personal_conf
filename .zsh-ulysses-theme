@@ -12,6 +12,11 @@ zstyle ':vcs_info:*' enable git hg bzr svn cvs
 ##
 zstyle ':vcs_info:(hg*|git*):*' get-revision true
 zstyle ':vcs_info:(hg*|git*):*' check-for-changes true
+## Subversion
+zstyle ':vcs_info:svn*:*' formats "%F{cyan}%r %s${reset} %b%m"
+zstyle ':vcs_info:svn*:*' actionformats "%F(cyan)${reset} %F{blue}%b | %a"
+zstyle ':vcs_info:(svn|bzr):*' branchformat '%F{blue}rev. %r %F{yellow}on %F{red}%b'
+#zstyle ':vcs_info:(svn|bzr):*' branchformat '%b:r%r'
 
 ## Mercurial
 zstyle ':vcs_info:hg*:*' formats "%F{cyan}%s${reset} %F{blue}%i${reset}%u%c %F{yellow}on %F{red}%b${reset}%m"
