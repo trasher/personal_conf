@@ -1,2 +1,3 @@
-# This will set the default prompt to the adam1 theme
-prompt adam1
+
+. $HOME/.zsh-ulysses-theme
+. $HOME/.zsh_functions/zsh-syntax-highlighting.zsh
