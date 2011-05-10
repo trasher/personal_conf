@@ -1,5 +1,9 @@
-# This will set the default prompt to the adam1 theme
-prompt adam1
+
+. $HOME/.zsh-ulysses-theme
+. $HOME/.zsh_functions/zsh-syntax-highlighting.zsh
+
+WATCH=notme         # Report any login/logout of other users
+WATCHFMT='%n %a %l from %m at %T.'
 
 #extension based aliases
 alias -s pdf="evince"

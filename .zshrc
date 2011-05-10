@@ -13,17 +13,32 @@ promptinit
 HISTFILE=~/.zshhistory
 HISTSIZE=50000
 SAVEHIST=50000
-#do not save entries that begin with a space in the history
-setopt HIST_IGNORE_SPACE
-#do not store duplicate entries in the history
-setopt hist_ignore_all_dups
-#access to the current history from multiple shells
-setopt appendhistory
-#add date and duration to history entries
-setopt EXTENDED_HISTORY
+
+setopt				\
+	auto_cd 		\
+	auto_pushd		\
+	chase_links		\
+	hist_verify		\
+	complete_aliases	\
+	hist_ignore_all_dups	\
+	hist_ignore_space	\
+	hist_verify		\
+	share_history		\
+	list_types		\
+	extended_history	\
+	append_history		\
+	null_glob
 
 # Say how long a command took, if it took more than 30 seconds
-export REPORTTIME=30
+export REPORTTIME=60
+
+# Set grep to ignore SCM directories
+if ! $(grep --exclude-dir 2> /dev/null); then
+    GREP_OPTIONS="--color --exclude-dir=.svn --exclude=\*.pyc --exclude-dir=.hg --exclude-dir=.bzr --exclude-dir=.git"
+else
+    GREP_OPTIONS="--color --exclude=\*.svn\* --exclude=\*.pyc --exclude=\*.hg\* --exclude=\*.bzr\* --exclude=\*.git\*"
+fi
+export GREP_OPTIONS
 
 #emacs key binding
 bindkey -e
@@ -42,6 +57,9 @@ bindkey ';5C' emacs-forward-word
 bindkey $terminfo[khome] beginning-of-line
 bindkey $terminfo[kend] end-of-line
 
+#do not remove entire line on ctrl+u
+bindkey '^u' backward-kill-line
+
 # completion for PID
 #zstyle ':completion:*:*:kill:*' menu yes select
 #zstyle ':completion:*:kill:*' force-list always
@@ -50,6 +68,28 @@ bindkey $terminfo[kend] end-of-line
 
 # cd not select parent dir
 zstyle ':completion:*:cd:*' ignore-parents parent pwd
+zstyle ':completion:*' list-colors "$LS_COLORS"
+
+zstyle -e ':completion:*:(ssh|scp|sshfs|ping|telnet|nc|rsync):*' hosts '
+    reply=( ${=${${(M)${(f)"$(<~/.ssh/config)"}:#Host*}#Host }:#*\**} )'
+
+
+#aliases
+alias df='df -h'
+alias dus='du -sh'
+
+function genpass() {
+    if [ ! "$1" ]; then
+        echo "Usage: $0 20"
+        echo "For a random, 20-character password."
+        return 1
+    fi
+    dd if=/dev/urandom count=1 2>/dev/null | tr -cd 'A-Za-z0-9!@#$%^&*()_+' | cut -c-$1
+}
+
+memtotaller() {
+    /bin/ps -u $(whoami) -o pid,rss,command | awk '{sum+=$2} END {print "Total " sum / 1024 " MB"}'
+}
 
 # user specific zshrc
 if [ -f $HOME/.zshrc-$(whoami) ]

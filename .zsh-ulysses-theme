@@ -1,0 +1,157 @@
+#usefull ?
+fpath=( ~/.zsh_functions $fpath )
+[[ -d $HOME/.zsh_functions/VCS_Info ]] \
+    && fpath[1]=( ${fpath[1]} ~/.zsh_functions/**/*~*/(CVS)#(/) )
+
+
+##############################################################################
+## setup vcs
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git hg bzr svn cvs
+#zstyle ':vcs_info:*+*:*' debug true
+##
+zstyle ':vcs_info:(hg*|git*):*' get-revision true
+zstyle ':vcs_info:(hg*|git*):*' check-for-changes true
+
+## Mercurial
+zstyle ':vcs_info:hg*:*' formats "%F{cyan}%s${reset} %F{blue}%i${reset}%u%c %F{yellow}on %F{red}%b${reset}%m"
+zstyle ':vcs_info:hg*:*' actionformats "%F{cyan}%s|%F{red}%a${reset} %F{blue}%i${reset}%u%c %F{yellow}on %F{red}%b${reset}%m"
+zstyle ':vcs_info:hg*:*' hgrevformat "%r" # only show local rev
+zstyle ':vcs_info:hg*:*' branchformat "%b" # only show branch
+zstyle ':vcs_info:hg*:*' unstagedstr "%F{green}\ó/${reset}"
+# bookmarks
+zstyle ':vcs_info:hg*:*' get-bookmarks true
+# MQ settings
+zstyle ':vcs_info:hg*:*' get-mq true
+zstyle ':vcs_info:hg*:*' get-unapplied true
+zstyle ':vcs_info:hg*:*' patch-format "mq(%g):%n/%c %p"
+zstyle ':vcs_info:hg*:*' nopatch-format "mq(%g):%n/%c %p"
+# hooks
+zstyle ':vcs_info:hg*+set-message:*' hooks hg-storerev hg-branchhead
+
+### Store the localrev and global hash for use in other hooks
+function +vi-hg-storerev() {
+    user_data[localrev]=${hook_com[localrev]}
+    user_data[hash]=${hook_com[hash]}
+}
+
+### Show marker when the working directory is not on a branch head
+# This may indicate that running `hg up` will do something
+function +vi-hg-branchhead() {
+    local branchheadsfile i_tiphash i_branchname
+    local -a branchheads
+
+    local branchheadsfile=${hook_com[base]}/.hg/branchheads.cache
+
+    # Bail out if any mq patches are applied
+    [[ -s ${hook_com[base]}/.hg/patches/status ]] && return 0
+
+    if [[ -r ${branchheadsfile} ]] ; then
+        while read -r i_tiphash i_branchname ; do
+            branchheads+=( $i_tiphash )
+        done < ${branchheadsfile}
+
+        if [[ ! ${branchheads[(i)${user_data[hash]}]} -le ${#branchheads} ]] ; then
+            hook_com[revision]="${c4}^${c2}${hook_com[revision]}"
+        fi
+    fi
+}
+## Git
+zstyle ':vcs_info:git*:*' formats "%F{cyan}%s${reset} %F{blue}%12.12i${reset}%u%c %F{yellow}on %F{red}%b${reset}%m"
+zstyle ':vcs_info:git*:*' actionformats "%F{cyan}%s|%F{red}%a${reset} %F{blue}%12.12i${reset}%u%c %F{yellow}on %F{red}%b${reset}%m"
+zstyle ':vcs_info:git*:*' stagedstr "%F{green}\ó/${reset}"
+zstyle ':vcs_info:git*:*' unstagedstr "%F{red}\ó/${reset}"
+
+# hooks
+zstyle ':vcs_info:git*+set-message:*' hooks git-st git-stash
+
+# Show remote ref name and number of commits ahead-of or behind
+function +vi-git-st() {
+    local ahead behind remote
+    local -a gitstatus
+
+    # Are we on a remote-tracking branch?
+    remote=${$(git rev-parse --verify ${hook_com[branch]}@{upstream} \
+        --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
+
+    if [[ -n ${remote} ]] ; then
+        # for git prior to 1.7
+        # ahead=$(git rev-list origin/${hook_com[branch]}..HEAD | wc -l)
+        ahead=$(git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l)
+        (( $ahead )) && gitstatus+=( " ${c3}%F{green}+${ahead}${c2}" )
+
+        # for git prior to 1.7
+        # behind=$(git rev-list HEAD..origin/${hook_com[branch]} | wc -l)
+        behind=$(git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l)
+        (( $behind )) && gitstatus+=( " ${c4}%F{red}-${behind}${c2}" )
+
+        hook_com[branch]="${hook_com[branch]} ${reset}[%F{gray}${remote}${(j:/:)gitstatus}${reset}]"
+    fi
+}
+
+function +vi-git-stash() {
+    local -a stashes
+
+    if [[ -s ${hook_com[base]}/.git/refs/stash ]] ; then
+        stashes=$(git stash list 2>/dev/null | wc -l)
+        hook_com[misc]+=" ${reverse}(${stashes} stashed)${reset}"
+    fi
+}
+
+## for good ol' cvs
+zstyle ':vcs_info:cvs:*' formats "%F{cyan}%s${reset} %F{yellow}on %F{red}%b${reset}"
+zstyle ':vcs_info:cvs:*' actionformats "%F{cyan}%s|%F{red}%a${reset} %F{yellow}on %F{red}%b${reset}"
+
+# setup prompt
+#export PS1
+
+#we first load colors
+autoload -U colors && colors
+
+# executed before prompt is shown
+precmd () {
+    prompt_ulysses_color1=${1:-'blue'}
+    prompt_ulysses_color2=${2:-'cyan'}
+    prompt_ulysses_color3=${3:-'green'}
+
+    base_prompt="%K{$prompt_ulysses_color1}%n@%m%k "
+    post_prompt="%b%f%k"
+
+    base_prompt_no_color=$(echo "$base_prompt" | perl -pe "s/%(K{.*?}|k)//g")
+    post_prompt_no_color=$(echo "$post_prompt" | perl -pe "s/%(K{.*?}|k)//g")
+
+    base_prompt_expanded_no_color=$(print -P "$base_prompt_no_color")
+    base_prompt_etc=$(print -P "$base_prompt%(4~|...|)%3~")
+
+    psvar=()
+    vcs_info
+    [[ -n $vcs_info_msg_0_ ]] && psvar[1]=" %b%K($vcs_info_msg_0_)%k"
+
+    vcsstr=$psvar[1]
+
+    prompt_length=${#base_prompt_etc}
+    if [[ $prompt_length -lt 40 ]]; then
+        path_prompt="%B%F{$prompt_ulysses_color2}%(4~|...|)%3~%F{white}"
+    else
+        space_left=$(( $COLUMNS - $#base_prompt_expanded_no_color - 2 ))
+        path_prompt="%B%F{$prompt_ulysses_color3}%${space_left}<...<%~ %F{black}"
+
+        local prompt_line_1a_width=${#${(S%%)path_prompt//(\%(Bbkf]|)\{*\}|\%[Bbkf])}}
+        local prompt_line_1b_width=${#${(S%%)vcsstr//(\%([BbkfF]|)\{*\}|\%[Bbkf])}}
+        if [[ $prompt_line_1b_width -gt 0 ]]; then
+            local prompt_padding_size=$(( COLUMNS
+                                              - prompt_line_1a_width
+                                              - prompt_line_1b_width
+                                              - 2))
+
+            # Try to fit in long path and user@host.
+            local prompt_padding="${(l.(($prompt_padding_size )))..─.)}"
+            path_prompt="$path_prompt$prompt_padding$vcsstr"
+        fi
+        path_prompt="$path_prompt$prompt_newline%F{white}"
+    fi
+
+    PS1="$base_prompt$path_prompt %# $post_prompt"
+    PS2="$base_prompt$path_prompt %_> $post_prompt $psvar[1]"
+    PS3="$base_prompt$path_prompt ?# $post_prompt"
+}
