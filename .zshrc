@@ -96,3 +96,15 @@ if [ -f $HOME/.zshrc-$(whoami) ]
 then
   . $HOME/.zshrc-$(whoami)
 fi
+
+# automatically loads ulysses theme and .zsh_functions/VCS_Info directory are present
+if [ -f $HOME/.zsh-ulysses-theme -a -d $HOME/.zsh_functions/VCS_Info ]
+then
+  . $HOME/.zsh-ulysses-theme
+fi
+
+#automaticaly load syntax highlighting if functions file is present
+if [ -f $HOME/.zsh_functions/zsh-syntax-highlighting.zsh ]
+then
+  . $HOME/.zsh_functions/zsh-syntax-highlighting.zsh
+fi
