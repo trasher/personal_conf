@@ -1,0 +1,7 @@
+caption string "%w"
+hardstatus on
+hardstatus alwayslastline
+backtick 1 5 5 uptime
+#hardstatus string "%H|%=Load %l | Uptime %1`%=|%D %d/%m %c"
+#caption     always        "%{+b rk}%H%{gk} |%c %{yk}%d.%m.%Y | %72=Load: %l %{wk}"
+hardstatus string "%H|%=%1`%=|%D %d/%m %c"

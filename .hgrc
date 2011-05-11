@@ -1,0 +1,21 @@
+[ui]
+username = trashy <johan@x-tnd.be>
+verbose = True
+[extensions]
+color =
+hgext.extdiff =
+hgext.convert =
+progress =
+mq =
+rebase =
+[auth]
+*.schemes = http
+*.username = trasher
+boulot.prefix = hg.ajlsm.com
+boulot.schemes = http
+boulot.username = jcwiklinski
+[extdiff]
+# add new command called vdiff, runs kdiff3
+cmd.vdiff = kdiff3
+# add new command called meld, runs meld (no need to name twice)
+cmd.meld =
