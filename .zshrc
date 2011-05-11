@@ -78,6 +78,8 @@ zstyle ':completion:*' list-colors "$LS_COLORS"
 alias df='df -h'
 alias dus='du -sh'
 
+alias history='history -dDf'
+
 function genpass() {
     if [ ! "$1" ]; then
         echo "Usage: $0 20"
