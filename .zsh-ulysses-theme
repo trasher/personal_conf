@@ -1,9 +1,3 @@
-#usefull ?
-fpath=( ~/.zsh_functions $fpath )
-[[ -d $HOME/.zsh_functions/VCS_Info ]] \
-    && fpath[1]=( ${fpath[1]} ~/.zsh_functions/**/*~*/(CVS)#(/) )
-
-
 ##############################################################################
 ## setup vcs
 autoload -Uz vcs_info
