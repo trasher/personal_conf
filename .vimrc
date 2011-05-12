@@ -59,4 +59,8 @@ set laststatus=2
 set foldmethod=indent
 set foldlevel=99
 
-
+" faire en sorte que le raccourci CTRL-X-F
+" marche même quand le fichier est après
+" le caractère égal. Comme :
+" variable=/etc/<C-XF>
+set isfname-==
