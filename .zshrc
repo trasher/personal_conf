@@ -29,6 +29,8 @@ setopt				\
 	append_history		\
 	null_glob
 
+setopt COMPLETE_IN_WORD
+
 # Say how long a command took, if it took more than 30 seconds
 export REPORTTIME=60
 
