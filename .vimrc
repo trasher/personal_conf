@@ -53,8 +53,9 @@ filetype indent on
 set laststatus=2
 
 "Montre les caractères de fin de lignes, les tabs et les espaces en trop
-"set list
+set list
 "set listchars=eol:¤,trail:-
+set listchars=tab:»·,trail:-
 
 set foldmethod=indent
 set foldlevel=99
@@ -64,3 +65,4 @@ set foldlevel=99
 " le caractère égal. Comme :
 " variable=/etc/<C-XF>
 set isfname-==
+
