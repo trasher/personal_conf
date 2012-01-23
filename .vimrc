@@ -66,3 +66,7 @@ set foldlevel=99
 " variable=/etc/<C-XF>
 set isfname-==
 
+"chargement de pathogen
+call pathogen#infect()
+
+
