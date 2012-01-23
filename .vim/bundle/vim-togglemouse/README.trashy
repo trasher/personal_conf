@@ -1,0 +1,5 @@
+Initially cloned from:
+git clone https://github.com/nvie/vim-togglemouse.git
+
+Make a little change to use <F10> instead of <F12>, already used
+for Guake!

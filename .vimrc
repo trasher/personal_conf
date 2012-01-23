@@ -11,7 +11,18 @@ set smartcase
 set cursorline
 hi CursorLine guibg=#e7ebff
 " Pour activer les numéros de lignes dans la marge :
-"set number
+set number
+
+" Pour conserver d'avantages d'historique
+set history=1000
+" On veut conserver d'avantage de niveaux d'annulation aussi
+set undolevels=1000
+
+" Des ficheirs qu'on ne voudra probablement pas éditer
+set wildignore=*.swp,*.bak,*.pyc,*.class
+
+" Modification du titre du terminal
+set title
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
@@ -56,6 +67,8 @@ set laststatus=2
 set list
 "set listchars=eol:¤,trail:-
 set listchars=tab:»·,trail:-
+" On masque cependant les tabulations pour les fichiers XML et HTML, c'est OK
+autocmd filetype html,xml set listchars-=tab:>.
 
 set foldmethod=indent
 set foldlevel=99
@@ -69,4 +82,7 @@ set isfname-==
 "chargement de pathogen
 call pathogen#infect()
 
+" mmodification du \ pour ,
+let mapleader=","
 
+set mouse=a
