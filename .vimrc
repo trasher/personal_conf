@@ -218,6 +218,19 @@ function! s:LongLines()
     return long_line_lens
 endfunction
 
+"find the median of the given array of numbers
+function! s:Median(nums)
+    let nums = sort(a:nums)
+    let l = len(nums)
+
+    if l % 2 == 1
+        let i = (l-1) / 2
+        return nums[i]
+    else
+        return (nums[l/2] + nums[(l/2)-1]) / 2
+    endif
+endfunction
+
 "Montre les caractères de fin de lignes, les tabs et les espaces en trop
 set list
 "set listchars=eol:¤,trail:-
@@ -243,3 +256,29 @@ let mapleader=","
 set mouse=a
 
 nmap <silent> ,/ :nohlsearch<CR>
+
+" raccourci fuzzyfinder
+nmap ,f :FufFileWithCurrentBufferDir<CR>
+
+" autocommads on php files
+set complete=.,w,b,u,t,i,k~/.vim/syntax/php.api
+autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+
+" Create tags with '\1' command
+"function! Phptags()
+"    "change exclude for your project, here it's a good exclude for Copix temp and var files"
+"    let cmd = '!ctags -f .tags -h ".php" -R --exclude="\.svn" --exclude="./var" --exclude="./temp" --totals=yes --tag-relative=yes'
+"    exec cmd
+"    set tags=.tags
+"endfunction
+":let g:proj_run1='call Phptags()'
+"
+""to remap \1 on ,1
+"nmap ,1 \1
+
+" lancement de nerdtree avec vim
+"autocmd vimenter * NERDTree
+" lancement de nerdtree si aucun ficier n'a été spécifié
+autocmd vimenter * if !argc() | NERDTree | endif
+" fermeture de vim si nerdtree reste seul à gauche
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
