@@ -1,7 +1,16 @@
+" Use vim not vi :)
+set nocompatible
+
+"chargement de pathogen
+"call pathogen#infect()
+call pathogen#runtime_append_all_bundles()
+call pathogen#helptags()
+
 " Set to auto read when a file is changed from the outside
 set autoread
 
-"set wildmenu "Turn on WiLd menu
+set wildmode=list:longest
+set wildmenu "Turn on WiLd menu
 
 set hid "Change buffer - without saving
 
@@ -59,6 +68,15 @@ set noautoindent
 filetype on " try to detect filetypes
 filetype plugin indent on " enable loading indent file for filetype
 filetype indent on
+
+syntax on
+"set background=dark
+"colorscheme solarized
+
+set mouse=a
+set ttymouse=xterm2
+
+"set t_Co=256
 
 " Afficher en permanence la barre d'état (en plus de la barre de commande) :
 "statusline setup
@@ -231,6 +249,25 @@ function! s:Median(nums)
     endif
 endfunction
 
+let g:syntastic_enable_signs=1
+let g:syntastic_auto_loc_list=2
+
+"taglist settings
+let Tlist_Compact_Format = 1
+let Tlist_Enable_Fold_Column = 0
+let Tlist_Exit_OnlyWindow = 0
+let Tlist_WinWidth = 35
+let tlist_php_settings = 'php;c:class;f:Functions'
+let Tlist_Use_Right_Window=1
+let Tlist_GainFocus_On_ToggleOpen = 1
+let Tlist_Display_Tag_Scope = 1
+let Tlist_Process_File_Always = 1
+let Tlist_Show_One_File = 1
+
+"nerdtree settings
+"let g:NERDTreeMouseMode = 2
+"let g:NERDTreeWinSize = 40
+
 "Montre les caractères de fin de lignes, les tabs et les espaces en trop
 set list
 "set listchars=eol:¤,trail:-
@@ -247,13 +284,8 @@ set foldlevel=99
 " variable=/etc/<C-XF>
 set isfname-==
 
-"chargement de pathogen
-call pathogen#infect()
-
 " mmodification du \ pour ,
 let mapleader=","
-
-set mouse=a
 
 nmap <silent> ,/ :nohlsearch<CR>
 
@@ -279,6 +311,35 @@ autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 " lancement de nerdtree avec vim
 "autocmd vimenter * NERDTree
 " lancement de nerdtree si aucun ficier n'a été spécifié
-autocmd vimenter * if !argc() | NERDTree | endif
+"autocmd vimenter * if !argc() | NERDTree | endif
 " fermeture de vim si nerdtree reste seul à gauche
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+"autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
+"spell check when writing commit logs
+autocmd filetype svn,*commit* setlocal spell
+
+"http://vimcasts.org/episodes/fugitive-vim-browsing-the-git-object-database/
+"hacks from above (the url, not jesus) to delete fugitive buffers when we
+"leave them - otherwise the buffer list gets poluted
+"
+"add a mapping on .. to view parent tree
+autocmd BufReadPost fugitive://* set bufhidden=delete
+autocmd BufReadPost fugitive://*
+  \ if fugitive#buffer().type() =~# '^\%(tree\|blob\)$' |
+  \ nnoremap <buffer> .. :edit %:h<CR> |
+  \ endif
+
+let g:ex_toolkit_path = '~/.vim/exvim/toolkit/'
+let g:LookupFile_DisableDefaultMap = 1
+
+let g:ex_default_langs = ['java', 'python', 'vim', 'ini', 'make', 'sh', 'php', 'js', 'html' ]
+
+nmap <unique> <silent> <C-F5> <Plug>LookupFile
+let g:LookupFile_TagExpr = ''
+let g:LookupFile_MinPatLength = 3
+let g:LookupFile_PreservePatternHistory = 0
+let g:LookupFile_PreserveLastPattern = 0
+let g:LookupFile_AllowNewFiles = 0
+let g:LookupFile_smartcase = 1
+let g:LookupFile_EscCancelsPopup = 1
+
