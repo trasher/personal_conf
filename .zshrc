@@ -14,20 +14,20 @@ HISTFILE=~/.zshhistory
 HISTSIZE=50000
 SAVEHIST=50000
 
-setopt				\
-	auto_cd 		\
-	auto_pushd		\
-	chase_links		\
-	hist_verify		\
-	complete_aliases	\
-	hist_ignore_all_dups	\
-	hist_ignore_space	\
-	hist_verify		\
-	share_history		\
-	list_types		\
-	extended_history	\
-	append_history		\
-	null_glob
+setopt                      \
+    auto_cd                 \
+    auto_pushd              \
+    chase_links             \
+    hist_verify             \
+    complete_aliases        \
+    hist_ignore_all_dups    \
+    hist_ignore_space       \
+    hist_verify             \
+    share_history           \
+    list_types              \
+    extended_history        \
+    append_history          \
+    null_glob
 
 setopt COMPLETE_IN_WORD
 
@@ -112,3 +112,15 @@ if [ -f $HOME/.zsh_functions/zsh-syntax-highlighting.zsh ]
 then
   . $HOME/.zsh_functions/zsh-syntax-highlighting.zsh
 fi
+
+#automaticaly load git-flowhighlighting if functions file is present
+if [ -f /home/trasher/.zsh_functions/zsh-git-flow-completion.zsh ]
+then
+  . /home/trasher/.zsh_functions/zsh-git-flow-completion.zsh
+fi
+
+#colorize and paginate SVN commands
+#if [ -f $HOME/.zsh_functions/zsh-svn_colored_paginated.zsh ]
+#then
+#    . $HOME/.zsh_functions/zsh-svn_colored_paginated.zsh
+#fi

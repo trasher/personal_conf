@@ -33,6 +33,9 @@ set wildignore=*.swp,*.bak,*.pyc,*.class
 " Modification du titre du terminal
 set title
 
+" Désactivation des fichiers de swap
+set noswapfile
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
