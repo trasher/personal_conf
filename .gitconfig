@@ -1,6 +1,7 @@
 [user]
     name = Johan Cwiklinski
     email = johan@x-tnd.be
+    signkey = johan@x-tnd.be
     [core]
     editor = vim
 [color]
