@@ -2,8 +2,9 @@
     name = Johan Cwiklinski
     email = johan@x-tnd.be
     signkey = johan@x-tnd.be
-    [core]
+[core]
     editor = vim
+    autocrlf = input
 [color]
     ui = auto
     diff = auto
@@ -12,6 +13,7 @@
     interactive = auto
 [alias]
     co = checkout
+    st = status
     lol = log --graph --decorate --pretty=oneline --abbrev-commit
     lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
 [merge]
