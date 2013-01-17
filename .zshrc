@@ -114,9 +114,9 @@ then
 fi
 
 #automaticaly load git-flowhighlighting if functions file is present
-if [ -f /home/trasher/.zsh_functions/zsh-git-flow-completion.zsh ]
+if [ -f $HOME/.zsh_functions/zsh-git-flow-completion.zsh ]
 then
-  . /home/trasher/.zsh_functions/zsh-git-flow-completion.zsh
+  . $HOME/.zsh_functions/zsh-git-flow-completion.zsh
 fi
 
 #colorize and paginate SVN commands
