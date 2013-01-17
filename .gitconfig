@@ -1,7 +1,7 @@
 [user]
     name = Johan Cwiklinski
     email = johan@x-tnd.be
-    signkey = johan@x-tnd.be
+    signkey = 0x8BA59F94
 [core]
     editor = vim
     autocrlf = input
@@ -17,6 +17,6 @@
     lol = log --graph --decorate --pretty=oneline --abbrev-commit
     lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
 [merge]
-    tool = meld
+    tool = kdiff3
 [push]
     default = tracking
