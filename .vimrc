@@ -274,9 +274,10 @@ let Tlist_Show_One_File = 1
 "Montre les caractères de fin de lignes, les tabs et les espaces en trop
 set list
 "set listchars=eol:¤,trail:-
-set listchars=tab:»·,trail:-
+"set listchars=tab:»·,trail:-
+set listchars=tab:>.,trail:-
 " On masque cependant les tabulations pour les fichiers XML et HTML, c'est OK
-autocmd filetype html,xml set listchars-=tab:>.
+"autocmd filetype html,xml set listchars-=tab:>.
 
 set foldmethod=indent
 set foldlevel=99
@@ -319,7 +320,7 @@ autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 "autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
 "spell check when writing commit logs
-autocmd filetype svn,*commit* setlocal spell
+"autocmd filetype svn,*commit* setlocal spell
 
 "http://vimcasts.org/episodes/fugitive-vim-browsing-the-git-object-database/
 "hacks from above (the url, not jesus) to delete fugitive buffers when we
