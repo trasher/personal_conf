@@ -75,6 +75,7 @@ filetype indent on
 syntax on
 "set background=dark
 "colorscheme solarized
+au BufRead,BufNewFile *.twig set filetype=htmljinja
 
 set mouse=a
 set ttymouse=xterm2
