@@ -58,6 +58,8 @@ bindkey ';5C' emacs-forward-word
 # fix home/end keys
 bindkey $terminfo[khome] beginning-of-line
 bindkey $terminfo[kend] end-of-line
+bindkey "^[[H" beginning-of-line
+bindkey "^[[F" end-of-line
 
 #do not remove entire line on ctrl+u
 bindkey '^u' backward-kill-line
