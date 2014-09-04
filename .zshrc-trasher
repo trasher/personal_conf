@@ -6,3 +6,5 @@ WATCHFMT='%n %a %l from %m at %T.'
 alias -s pdf="evince"
 alias -s {doc,ppt,xls}="libreoffice"
 alias -s {odt,ods,odp}="libreoffice"
+
+export SYMFONY_ENV=console
