@@ -1,350 +1,491 @@
-" Use vim not vi :)
-set nocompatible
+"/////////////////////////////////////////////////////////////////////////////
+" basic
+"/////////////////////////////////////////////////////////////////////////////
 
-"chargement de pathogen
-"call pathogen#infect()
-call pathogen#runtime_append_all_bundles()
-call pathogen#helptags()
+set nocompatible " be iMproved, required
 
-" Set to auto read when a file is changed from the outside
-set autoread
-
-set wildmode=list:longest
-set wildmenu "Turn on WiLd menu
-
-set hid "Change buffer - without saving
-
-set ignorecase "Ignore case when searching
-set smartcase
-
-set cursorline
-hi CursorLine guibg=#e7ebff
-" Pour activer les numéros de lignes dans la marge :
-set number
-
-" Pour conserver d'avantages d'historique
-set history=1000
-" On veut conserver d'avantage de niveaux d'annulation aussi
-set undolevels=1000
-
-" Des ficheirs qu'on ne voudra probablement pas éditer
-set wildignore=*.swp,*.bak,*.pyc,*.class
-
-" Modification du titre du terminal
-set title
-
-" Désactivation des fichiers de swap
-set noswapfile
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Text, tab and indent related
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Indispensable pour ne pas tout casser avec ce qui va suivre
-set preserveindent
-" indentation automatique
-"set autoindent
-" Remplace les tab par des espaces
-set expandtab
-" largeur auto-indentation
-set shiftwidth=4
-" Arrondit la valeur de l'indentation
-set shiftround
-" Largeur du caractère tab
-set tabstop=4
-" Largeur de l'indentation de la touche tab
-set softtabstop=4
-
-" Utilise shiftwidth à la place de tabstop en début de ligne (et backspace
-" supprime d'un coup si ce sont des espaces)
-set smarttab
-
-set lbr
-set tw=500
-
-set ai "Auto indent
-set si "Smart indet
-set wrap "Wrap lines
-
-" autoindent n'est spécifique à aucun langage et fonctionne en général moins
-" bien
-set noautoindent
-filetype on " try to detect filetypes
-filetype plugin indent on " enable loading indent file for filetype
-filetype indent on
-
-syntax on
-"set background=dark
-"colorscheme solarized
-au BufRead,BufNewFile *.twig set filetype=htmljinja
-
-set mouse=a
-set ttymouse=xterm2
-
-"set t_Co=256
-
-" Afficher en permanence la barre d'état (en plus de la barre de commande) :
-"statusline setup
-set statusline=%f "tail of the filename
-
-"display a warning if fileformat isnt unix
-set statusline+=%#warningmsg#
-set statusline+=%{&ff!='unix'?'['.&ff.']':''}
-set statusline+=%*
-
-"display a warning if file encoding isnt utf-8
-set statusline+=%#warningmsg#
-set statusline+=%{(&fenc!='utf-8'&&&fenc!='')?'['.&fenc.']':''}
-set statusline+=%*
-
-set statusline+=%h "help file flag
-set statusline+=%y "filetype
-set statusline+=%r "read only flag
-set statusline+=%m "modified flag
-
-set statusline+=%{fugitive#statusline()}
-
-"display a warning if &et is wrong, or we have mixed-indenting
-set statusline+=%#error#
-set statusline+=%{StatuslineTabWarning()}
-set statusline+=%*
-
-set statusline+=%{StatuslineTrailingSpaceWarning()}
-
-set statusline+=%{StatuslineLongLineWarning()}
-
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-"display a warning if &paste is set
-set statusline+=%#error#
-set statusline+=%{&paste?'[paste]':''}
-set statusline+=%*
-
-set statusline+=%= "left/right separator
-set statusline+=%{StatuslineCurrentHighlight()}\ \ "current highlight
-set statusline+=%c, "cursor column
-set statusline+=%l/%L "cursor line/total lines
-set statusline+=\ %P "percent through file
-set laststatus=2
-
-"recalculate the trailing whitespace warning when idle, and after saving
-autocmd cursorhold,bufwritepost * unlet! b:statusline_trailing_space_warning
-
-"return '[\s]' if trailing white space is detected
-"return '' otherwise
-function! StatuslineTrailingSpaceWarning()
-    if !exists("b:statusline_trailing_space_warning")
-
-        if !&modifiable
-            let b:statusline_trailing_space_warning = ''
-            return b:statusline_trailing_space_warning
-        endif
-
-        if search('\s\+$', 'nw') != 0
-            let b:statusline_trailing_space_warning = '[\s]'
-        else
-            let b:statusline_trailing_space_warning = ''
-        endif
-    endif
-    return b:statusline_trailing_space_warning
+function! OSX()
+    return has('macunix')
+endfunction
+function! LINUX()
+    return has('unix') && !has('macunix') && !has('win32unix')
+endfunction
+function! WINDOWS()
+    return  (has('win16') || has('win32') || has('win64'))
 endfunction
 
+" On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization
+" across (heterogeneous) systems easier.
+if !exists('g:exvim_custom_path')
+    if WINDOWS()
+        set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+    endif
+endif
 
-"return the syntax highlight group under the cursor ''
-function! StatuslineCurrentHighlight()
-    let name = synIDattr(synID(line('.'),col('.'),1),'name')
-    if name == ''
-        return ''
+"/////////////////////////////////////////////////////////////////////////////
+" language and encoding setup
+"/////////////////////////////////////////////////////////////////////////////
+
+" always use English menu
+" NOTE: this must before filetype off, otherwise it won't work
+set langmenu=none
+
+" use English for anaything in vim-editor. 
+if WINDOWS()
+    silent exec 'language english'
+elseif OSX()
+    silent exec 'language en_US' 
+else
+    let s:uname = system("uname -s")
+    if s:uname == "Darwin\n"
+        " in mac-terminal
+        silent exec 'language en_US' 
     else
-        return '[' . name . ']'
+        " in linux-terminal
+        silent exec 'language en_US.utf8' 
     endif
+endif
+
+" try to set encoding to utf-8
+if WINDOWS()
+    " Be nice and check for multi_byte even if the config requires
+    " multi_byte support most of the time
+    if has('multi_byte')
+        " Windows cmd.exe still uses cp850. If Windows ever moved to
+        " Powershell as the primary terminal, this would be utf-8
+        set termencoding=cp850
+        " Let Vim use utf-8 internally, because many scripts require this
+        set encoding=utf-8
+        setglobal fileencoding=utf-8
+        " Windows has traditionally used cp1252, so it's probably wise to
+        " fallback into cp1252 instead of eg. iso-8859-15.
+        " Newer Windows files might contain utf-8 or utf-16 LE so we might
+        " want to try them first.
+        set fileencodings=ucs-bom,utf-8,utf-16le,cp1252,iso-8859-15
+    endif
+
+else
+    " set default encoding to utf-8
+    set encoding=utf-8
+    set termencoding=utf-8
+endif
+scriptencoding utf-8
+
+"/////////////////////////////////////////////////////////////////////////////
+" Bundle steup
+"/////////////////////////////////////////////////////////////////////////////
+
+filetype off " required
+
+" load .vimrc.plugins and .vimrc.plugins.local
+let vimrc_plugins_path = '~/.vimrc.plugins'
+let vimrc_plugins_local_path = '~/.vimrc.plugins.local'
+if exists('g:exvim_custom_path')
+    let vimrc_plugins_path = g:exvim_custom_path.'/.vimrc.plugins'
+    let vimrc_plugins_local_path = g:exvim_custom_path.'/.vimrc.plugins.local'
+endif
+
+if filereadable(expand(vimrc_plugins_path))
+    exec 'source ' . fnameescape(vimrc_plugins_path)
+endif
+if filereadable(expand(vimrc_plugins_local_path))
+    exec 'source ' . fnameescape(vimrc_plugins_local_path)
+endif
+
+filetype plugin indent on " required
+syntax on " required
+
+"/////////////////////////////////////////////////////////////////////////////
+" Default colorscheme setup
+"/////////////////////////////////////////////////////////////////////////////
+
+if has('gui_running')
+    set background=dark
+else
+    set background=dark
+    set t_Co=256 " make sure our terminal use 256 color
+    let g:solarized_termcolors = 256
+endif
+colorscheme solarized
+" colorscheme exlightgray
+
+"/////////////////////////////////////////////////////////////////////////////
+" General
+"/////////////////////////////////////////////////////////////////////////////
+
+"set path=.,/usr/include/*,, " where gf, ^Wf, :find will search 
+set backup " make backup file and leave it around 
+
+" setup back and swap directory
+let data_dir = $HOME.'/.data/'
+let backup_dir = data_dir . 'backup' 
+let swap_dir = data_dir . 'swap' 
+if finddir(data_dir) == ''
+    silent call mkdir(data_dir)
+endif
+if finddir(backup_dir) == ''
+    silent call mkdir(backup_dir)
+endif
+if finddir(swap_dir) == ''
+    silent call mkdir(swap_dir)
+endif
+unlet backup_dir
+unlet swap_dir
+unlet data_dir
+
+set backupdir=$HOME/.data/backup " where to put backup file 
+set directory=$HOME/.data/swap " where to put swap file 
+
+" Redefine the shell redirection operator to receive both the stderr messages and stdout messages
+set shellredir=>%s\ 2>&1
+set history=50 " keep 50 lines of command line history
+set updatetime=1000 " default = 4000
+set autoread " auto read same-file change ( better for vc/vim change )
+set maxmempattern=1000 " enlarge maxmempattern from 1000 to ... (2000000 will give it without limit)
+
+"/////////////////////////////////////////////////////////////////////////////
+" xterm settings
+"/////////////////////////////////////////////////////////////////////////////
+
+behave xterm  " set mouse behavior as xterm
+if &term =~ 'xterm'
+    set mouse=a
+endif
+
+"/////////////////////////////////////////////////////////////////////////////
+" Variable settings ( set all )
+"/////////////////////////////////////////////////////////////////////////////
+
+" ------------------------------------------------------------------ 
+" Desc: Visual
+" ------------------------------------------------------------------ 
+
+set matchtime=0 " 0 second to show the matching paren ( much faster )
+set nu " show line number
+set scrolloff=0 " minimal number of screen lines to keep above and below the cursor 
+set nowrap " do not wrap text
+
+" only supoort in 7.3 or higher
+if v:version >= 703
+    set noacd " no autochchdir
+endif
+
+" set default guifont
+if has('gui_running')
+    augroup ex_gui_font
+        " check and determine the gui font after GUIEnter. 
+        " NOTE: getfontname function only works after GUIEnter.  
+        au!
+        au GUIEnter * call s:set_gui_font()
+    augroup END
+
+    " set guifont
+    function! s:set_gui_font()
+        if has('gui_gtk2')
+            if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 12
+            elseif getfontname( 'DejaVu Sans Mono' ) != ''
+                set guifont=DejaVu\ Sans\ Mono\ 12
+            else
+                set guifont=Luxi\ Mono\ 12
+            endif
+        elseif has('x11')
+            " Also for GTK 1
+            set guifont=*-lucidatypewriter-medium-r-normal-*-*-180-*-*-m-*-*
+        elseif OSX()
+            if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h15
+            elseif getfontname( 'DejaVu Sans Mono' ) != ''
+                set guifont=DejaVu\ Sans\ Mono:h15
+            endif
+        elseif WINDOWS()
+            if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h11:cANSI
+            elseif getfontname( 'DejaVu Sans Mono' ) != ''
+                set guifont=DejaVu\ Sans\ Mono:h11:cANSI
+            elseif getfontname( 'Consolas' ) != ''
+                set guifont=Consolas:h11:cANSI " this is the default visual studio font
+            else
+                set guifont=Lucida_Console:h11:cANSI
+            endif
+        endif
+    endfunction
+endif
+
+" ------------------------------------------------------------------ 
+" Desc: Vim UI
+" ------------------------------------------------------------------ 
+
+set wildmenu " turn on wild menu, try typing :h and press <Tab>
+set showcmd " display incomplete commands
+set cmdheight=1 " 1 screen lines to use for the command-line
+set ruler " show the cursor position all the time
+set hidden " allow to change buffer without saving
+set shortmess=aoOtTI " shortens messages to avoid 'press a key' prompt
+set lazyredraw " do not redraw while executing macros (much faster)
+set display+=lastline " for easy browse last line with wrap text
+set laststatus=2 " always have status-line
+set titlestring=%t\ (%{expand(\"%:p:.:h\")}/)
+
+" set window size (if it's GUI)
+if has('gui_running')
+    " set window's width to 130 columns and height to 40 rows
+    if exists('+lines')
+        set lines=40
+    endif
+    if exists('+columns')
+        set columns=130
+    endif
+
+    " DISABLE
+    " if WINDOWS()
+    "     au GUIEnter * simalt ~x " Maximize window when enter vim
+    " else
+    "     " TODO: no way right now
+    " endif
+endif
+
+set showfulltag " show tag with function protype.
+set guioptions+=b " present the bottom scrollbar when the longest visible line exceed the window
+
+" disable menu & toolbar
+set guioptions-=m
+set guioptions-=T
+
+" ------------------------------------------------------------------ 
+" Desc: Text edit
+" ------------------------------------------------------------------ 
+
+set ai " autoindent 
+set si " smartindent 
+set backspace=indent,eol,start " allow backspacing over everything in insert mode
+" indent options
+" see help cinoptions-values for more details
+set	cinoptions=>s,e0,n0,f0,{0,}0,^0,:0,=s,l0,b0,g0,hs,ps,ts,is,+s,c3,C0,0,(0,us,U0,w0,W0,m0,j0,)20,*30
+" default '0{,0},0),:,0#,!^F,o,O,e' disable 0# for not ident preprocess
+" set cinkeys=0{,0},0),:,!^F,o,O,e
+
+" official diff settings
+set diffexpr=g:MyDiff()
+function! g:MyDiff()
+    let opt = '-a --binary -w '
+    if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+    if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+    let arg1 = v:fname_in
+    if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+    let arg2 = v:fname_new
+    if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+    let arg3 = v:fname_out
+    if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+    silent execute '!' .  'diff ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
 endfunction
 
-"recalculate the tab warning flag when idle and after writing
-autocmd cursorhold,bufwritepost * unlet! b:statusline_tab_warning
+set cindent shiftwidth=4 " set cindent on to autoinent when editing c/c++ file, with 4 shift width
+set tabstop=4 " set tabstop to 4 characters
+set expandtab " set expandtab on, the tab will be change to space automaticaly
+set ve=block " in visual block mode, cursor can be positioned where there is no actual character
 
-"return '[&et]' if &et is set wrong
-"return '[mixed-indenting]' if spaces and tabs are used to indent
-"return an empty string if everything is fine
-function! StatuslineTabWarning()
-    if !exists("b:statusline_tab_warning")
-        let b:statusline_tab_warning = ''
+" set Number format to null(default is octal) , when press CTRL-A on number
+" like 007, it would not become 010
+set nf=
 
-        if !&modifiable
-            return b:statusline_tab_warning
+" ------------------------------------------------------------------ 
+" Desc: Fold text
+" ------------------------------------------------------------------ 
+
+set foldmethod=marker foldmarker={,} foldlevel=9999
+set diffopt=filler,context:9999
+
+" ------------------------------------------------------------------ 
+" Desc: Search
+" ------------------------------------------------------------------ 
+
+set showmatch " show matching paren 
+set incsearch " do incremental searching
+set hlsearch " highlight search terms
+set ignorecase " set search/replace pattern to ignore case 
+set smartcase " set smartcase mode on, If there is upper case character in the search patern, the 'ignorecase' option will be override.
+
+" set this to use id-utils for global search
+set grepprg=lid\ -Rgrep\ -s
+set grepformat=%f:%l:%m
+
+"/////////////////////////////////////////////////////////////////////////////
+" Auto Command
+"/////////////////////////////////////////////////////////////////////////////
+
+" ------------------------------------------------------------------ 
+" Desc: Only do this part when compiled with support for autocommands.
+" ------------------------------------------------------------------ 
+
+if has('autocmd')
+
+    augroup ex
+        au!
+
+        " ------------------------------------------------------------------ 
+        " Desc: Buffer
+        " ------------------------------------------------------------------ 
+
+        " when editing a file, always jump to the last known cursor position.
+        " don't do it when the position is invalid or when inside an event handler
+        " (happens when dropping a file on gvim).
+        au BufReadPost *
+                    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+                    \   exe "normal g`\"" |
+                    \ endif
+        au BufNewFile,BufEnter * set cpoptions+=d " NOTE: ctags find the tags file from the current path instead of the path of currect file
+        au BufEnter * :syntax sync fromstart " ensure every file does syntax highlighting (full) 
+        au BufNewFile,BufRead *.avs set syntax=avs " for avs syntax file.
+
+        " DISABLE { 
+        " NOTE: will have problem with exvim, because exvim use exES_CWD as working directory for tag and other thing
+        " Change current directory to the file of the buffer ( from Script#65"CD.vim"
+        " au   BufEnter *   execute ":lcd " . expand("%:p:h") 
+        " } DISABLE end 
+
+        " ------------------------------------------------------------------ 
+        " Desc: file types 
+        " ------------------------------------------------------------------ 
+
+        au FileType text setlocal textwidth=78 " for all text files set 'textwidth' to 78 characters.
+        au FileType c,cpp,cs,swig set nomodeline " this will avoid bug in my project with namespace ex, the vim will tree ex:: as modeline.
+
+        " disable auto-comment for c/cpp, lua, javascript, c# and vim-script
+        au FileType c,cpp,java,javascript set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f:// 
+        au FileType cs set comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,f:///,f:// 
+        au FileType vim set comments=sO:\"\ -,mO:\"\ \ ,eO:\"\",f:\"
+        au FileType lua set comments=f:--
+
+        " if edit python scripts, check if have \t. ( python said: the programme can only use \t or not, but can't use them together )
+        au FileType python,coffee call s:check_if_expand_tab()
+    augroup END
+
+    function! s:check_if_expand_tab()
+        let has_noexpandtab = search('^\t','wn')
+        let has_expandtab = search('^    ','wn')
+
+        "
+        if has_noexpandtab && has_expandtab
+            let idx = inputlist ( ['ERROR: current file exists both expand and noexpand TAB, python can only use one of these two mode in one file.\nSelect Tab Expand Type:',
+                        \ '1. expand (tab=space, recommended)', 
+                        \ '2. noexpand (tab=\t, currently have risk)',
+                        \ '3. do nothing (I will handle it by myself)'])
+            let tab_space = printf('%*s',&tabstop,'')
+            if idx == 1
+                let has_noexpandtab = 0
+                let has_expandtab = 1
+                silent exec '%s/\t/' . tab_space . '/g'
+            elseif idx == 2
+                let has_noexpandtab = 1
+                let has_expandtab = 0
+                silent exec '%s/' . tab_space . '/\t/g'
+            else
+                return
+            endif
         endif
 
-        let tabs = search('^\t', 'nw') != 0
-
-"find spaces that arent used as alignment in the first indent column
-        let spaces = search('^ \{' . &ts . ',}[^\t]', 'nw') != 0
-
-        if tabs && spaces
-            let b:statusline_tab_warning = '[mixed-indenting]'
-        elseif (spaces && !&et) || (tabs && &et)
-            let b:statusline_tab_warning = '[&et]'
-        endif
-    endif
-    return b:statusline_tab_warning
-endfunction
-
-"recalculate the long line warning when idle and after saving
-autocmd cursorhold,bufwritepost * unlet! b:statusline_long_line_warning
-
-"return a warning for "long lines" where "long" is either &textwidth or 80 (if
-"no &textwidth is set)
-"
-"return '' if no long lines
-"return '[#x,my,$z] if long lines are found, were x is the number of long
-"lines, y is the median length of the long lines and z is the length of the
-"longest line
-function! StatuslineLongLineWarning()
-    if !exists("b:statusline_long_line_warning")
-
-        if !&modifiable
-            let b:statusline_long_line_warning = ''
-            return b:statusline_long_line_warning
-        endif
-
-        let long_line_lens = s:LongLines()
-
-        if len(long_line_lens) > 0
-            let b:statusline_long_line_warning = "[" .
-                        \ '#' . len(long_line_lens) . "," .
-                        \ 'm' . s:Median(long_line_lens) . "," .
-                        \ '$' . max(long_line_lens) . "]"
+        " 
+        if has_noexpandtab == 1 && has_expandtab == 0  
+            echomsg 'substitute space to TAB...'
+            set noexpandtab
+            echomsg 'done!'
+        elseif has_noexpandtab == 0 && has_expandtab == 1
+            echomsg 'substitute TAB to space...'
+            set expandtab
+            echomsg 'done!'
         else
-            let b:statusline_long_line_warning = ""
+            " it may be a new file
+            " we use original vim setting
         endif
-    endif
-    return b:statusline_long_line_warning
-endfunction
+    endfunction
+endif
 
-"return a list containing the lengths of the long lines in this buffer
-function! s:LongLines()
-    let threshold = (&tw ? &tw : 80)
-    let spaces = repeat(" ", &ts)
+"/////////////////////////////////////////////////////////////////////////////
+" Key Mappings
+"/////////////////////////////////////////////////////////////////////////////
 
-    let long_line_lens = []
+" NOTE: F10 looks like have some feature, when map with F10, the map will take no effects
 
-    let i = 1
-    while i <= line("$")
-        let len = strlen(substitute(getline(i), '\t', spaces, 'g'))
-        if len > threshold
-            call add(long_line_lens, len)
-        endif
-        let i += 1
-    endwhile
+" Don't use Ex mode, use Q for formatting
+map Q gq  
 
-    return long_line_lens
-endfunction
+" define the copy/paste judged by clipboard
+if &clipboard ==# 'unnamed'
+    " fix the visual paste bug in vim
+    " vnoremap <silent>p :call g:()<CR>
+else
+    " general copy/paste.
+    " NOTE: y,p,P could be mapped by other key-mapping
+    map <unique> <leader>y "*y
+    map <unique> <leader>p "*p
+    map <unique> <leader>P "*P
+endif
 
-"find the median of the given array of numbers
-function! s:Median(nums)
-    let nums = sort(a:nums)
-    let l = len(nums)
+" copy folder path to clipboard, foo/bar/foobar.c => foo/bar/
+nnoremap <unique> <silent> <leader>y1 :let @*=fnamemodify(bufname('%'),":p:h")<CR>
 
-    if l % 2 == 1
-        let i = (l-1) / 2
-        return nums[i]
-    else
-        return (nums[l/2] + nums[(l/2)-1]) / 2
-    endif
-endfunction
+" copy file name to clipboard, foo/bar/foobar.c => foobar.c
+nnoremap <unique> <silent> <leader>y2 :let @*=fnamemodify(bufname('%'),":p:t")<CR>
 
-let g:syntastic_enable_signs=1
-let g:syntastic_auto_loc_list=2
+" copy full path to clipboard, foo/bar/foobar.c => foo/bar/foobar.c 
+nnoremap <unique> <silent> <leader>y3 :let @*=fnamemodify(bufname('%'),":p")<CR>
 
-"taglist settings
-let Tlist_Compact_Format = 1
-let Tlist_Enable_Fold_Column = 0
-let Tlist_Exit_OnlyWindow = 0
-let Tlist_WinWidth = 35
-let tlist_php_settings = 'php;c:class;f:Functions'
-let Tlist_Use_Right_Window=1
-let Tlist_GainFocus_On_ToggleOpen = 1
-let Tlist_Display_Tag_Scope = 1
-let Tlist_Process_File_Always = 1
-let Tlist_Show_One_File = 1
+" F8 or <leader>/:  Set Search pattern highlight on/off
+nnoremap <unique> <F8> :let @/=""<CR>
+nnoremap <unique> <leader>/ :let @/=""<CR>
+" DISABLE: though nohlsearch is standard way in Vim, but it will not erase the 
+"          search pattern, which is not so good when use it with exVim's <leader>r 
+"          filter method
+" nnoremap <unique> <F8> :nohlsearch<CR>
+" nnoremap <unique> <leader>/ :nohlsearch<CR>
 
-"nerdtree settings
-"let g:NERDTreeMouseMode = 2
-"let g:NERDTreeWinSize = 40
+" map Ctrl-Tab to switch window
+nnoremap <unique> <S-Up> <C-W><Up>
+nnoremap <unique> <S-Down> <C-W><Down>
+nnoremap <unique> <S-Left> <C-W><Left>
+nnoremap <unique> <S-Right> <C-W><Right>
 
-"Montre les caractères de fin de lignes, les tabs et les espaces en trop
-set list
-"set listchars=eol:¤,trail:-
-"set listchars=tab:»·,trail:-
-set listchars=tab:>.,trail:-
-" On masque cependant les tabulations pour les fichiers XML et HTML, c'est OK
-"autocmd filetype html,xml set listchars-=tab:>.
+" easy buffer navigation
+" NOTE: if we already map to EXbn,EXbp. skip setting this
+if !hasmapto(':EXbn<CR>') && mapcheck('<C-l>','n') == ''
+    nnoremap <C-l> :bn<CR>
+endif
+if !hasmapto(':EXbp<CR>') && mapcheck('<C-h>','n') == ''
+    noremap <C-h> :bp<CR>
+endif
 
-set foldmethod=indent
-set foldlevel=99
+" easy diff goto
+noremap <unique> <C-k> [c
+noremap <unique> <C-j> ]c
 
-" faire en sorte que le raccourci CTRL-X-F
-" marche même quand le fichier est après
-" le caractère égal. Comme :
-" variable=/etc/<C-XF>
-set isfname-==
+" enhance '<' '>' , do not need to reselect the block after shift it.
+vnoremap <unique> < <gv
+vnoremap <unique> > >gv
 
-" mmodification du \ pour ,
-let mapleader=","
+" map Up & Down to gj & gk, helpful for wrap text edit
+noremap <unique> <Up> gk
+noremap <unique> <Down> gj
 
-nmap <silent> ,/ :nohlsearch<CR>
+" TODO: I should write a better one, make it as plugin exvim/swapword
+" VimTip 329: A map for swapping words
+" http://vim.sourceforge.net/tip_view.php?tip_id=
+" Then when you put the cursor on or in a word, press "\sw", and
+" the word will be swapped with the next word.  The words may
+" even be separated by punctuation (such as "abc = def").
+nnoremap <unique> <silent> <leader>sw "_yiw:s/\(\%#\w\+\)\(\W\+\)\(\w\+\)/\3\2\1/<cr><c-o>
 
-" raccourci fuzzyfinder
-nmap ,f :FufFileWithCurrentBufferDir<CR>
+"/////////////////////////////////////////////////////////////////////////////
+" local setup
+"/////////////////////////////////////////////////////////////////////////////
 
-" autocommads on php files
-set complete=.,w,b,u,t,i,k~/.vim/syntax/php.api
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+let vimrc_local_path = '~/.vimrc.local'
+if exists('g:exvim_custom_path')
+    let vimrc_local_path = g:exvim_custom_path.'/.vimrc.local'
+endif
 
-" Create tags with '\1' command
-"function! Phptags()
-"    "change exclude for your project, here it's a good exclude for Copix temp and var files"
-"    let cmd = '!ctags -f .tags -h ".php" -R --exclude="\.svn" --exclude="./var" --exclude="./temp" --totals=yes --tag-relative=yes'
-"    exec cmd
-"    set tags=.tags
-"endfunction
-":let g:proj_run1='call Phptags()'
-"
-""to remap \1 on ,1
-"nmap ,1 \1
+if filereadable(expand(vimrc_local_path))
+    exec 'source ' . fnameescape(vimrc_local_path)
+endif
 
-" lancement de nerdtree avec vim
-"autocmd vimenter * NERDTree
-" lancement de nerdtree si aucun ficier n'a été spécifié
-"autocmd vimenter * if !argc() | NERDTree | endif
-" fermeture de vim si nerdtree reste seul à gauche
-"autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
-
-"spell check when writing commit logs
-"autocmd filetype svn,*commit* setlocal spell
-
-"http://vimcasts.org/episodes/fugitive-vim-browsing-the-git-object-database/
-"hacks from above (the url, not jesus) to delete fugitive buffers when we
-"leave them - otherwise the buffer list gets poluted
-"
-"add a mapping on .. to view parent tree
-autocmd BufReadPost fugitive://* set bufhidden=delete
-autocmd BufReadPost fugitive://*
-  \ if fugitive#buffer().type() =~# '^\%(tree\|blob\)$' |
-  \ nnoremap <buffer> .. :edit %:h<CR> |
-  \ endif
-
-let g:ex_toolkit_path = '~/.vim/exvim/toolkit/'
-let g:LookupFile_DisableDefaultMap = 1
-
-let g:ex_default_langs = ['java', 'python', 'vim', 'ini', 'make', 'sh', 'php', 'js', 'html' ]
-
-nmap <unique> <silent> <C-F5> <Plug>LookupFile
-let g:LookupFile_TagExpr = ''
-let g:LookupFile_MinPatLength = 3
-let g:LookupFile_PreservePatternHistory = 0
-let g:LookupFile_PreserveLastPattern = 0
-let g:LookupFile_AllowNewFiles = 0
-let g:LookupFile_smartcase = 1
-let g:LookupFile_EscCancelsPopup = 1
-
+" vim:ts=4:sw=4:sts=4 et fdm=marker:

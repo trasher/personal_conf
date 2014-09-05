@@ -1,0 +1,96 @@
+" This file will be loaded at the end of .vimrc.
+" This file is designed to add your own vim scripts or override the exVim's .vimrc settings.
+
+set cursorline
+hi CursorLine guibg=#e7ebff
+
+" Pour conserver d'avantages d'historique
+set history=1000
+" On veut conserver d'avantage de niveaux d'annulation aussi
+set undolevels=1000
+
+" Des fichiers qu'on ne voudra probablement pas éditer
+set wildignore=*.swp,*.bak,*.pyc,*.class
+
+set wildmode=list:longest
+
+" Désactivation des fichiers de swap
+set noswapfile
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Text, tab and indent related
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Indispensable pour ne pas tout casser avec ce qui va suivre
+set preserveindent
+" Arrondit la valeur de l'indentation
+set shiftround
+" Largeur de l'indentation de la touche tab
+set softtabstop=4
+" Utilise shiftwidth à la place de tabstop en début de ligne (et backspace
+" supprime d'un coup si ce sont des espaces)
+set smarttab
+
+set lbr
+set tw=500
+
+set wrap "Wrap lines
+
+au BufRead,BufNewFile *.twig set filetype=htmljinja
+
+set ttymouse=xterm2
+
+let g:syntastic_enable_signs=1
+let g:syntastic_auto_loc_list=2
+
+"taglist settings
+let tlist_php_settings = 'php;c:class;f:Functions'
+let Tlist_Process_File_Always = 1 " To use the :TlistShowTag and the :TlistShowPrototype commands without the taglist window and the taglist menu, you should set this variable to 1.
+
+"Montre les caractères de fin de lignes, les tabs et les espaces en trop
+set list
+"set listchars=eol:¤,trail:-
+"set listchars=tab:»·,trail:-
+set listchars=tab:>.,trail:-
+" On masque cependant les tabulations pour les fichiers XML et HTML, c'est OK
+"autocmd filetype html,xml set listchars-=tab:>.
+
+" faire en sorte que le raccourci CTRL-X-F
+" marche même quand le fichier est après
+" le caractère égal. Comme :
+" variable=/etc/<C-XF>
+set isfname-==
+
+
+" modification du \ pour ,
+"let mapleader=","
+
+"nmap <silent> ,/ :nohlsearch<CR>
+
+" raccourci fuzzyfinder
+nmap ,f :FufFileWithCurrentBufferDir<CR>
+
+" autocommads on php files
+set complete=.,w,b,u,t,i,k~/.vim/syntax/php.api
+autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+
+"http://vimcasts.org/episodes/fugitive-vim-browsing-the-git-object-database/
+"hacks from above (the url, not jesus) to delete fugitive buffers when we
+"leave them - otherwise the buffer list gets poluted
+"
+"add a mapping on .. to view parent tree
+autocmd BufReadPost fugitive://* set bufhidden=delete
+autocmd BufReadPost fugitive://*
+  \ if fugitive#buffer().type() =~# '^\%(tree\|blob\)$' |
+  \ nnoremap <buffer> .. :edit %:h<CR> |
+  \ endif
+
+" still used/needed?
+let g:LookupFile_DisableDefaultMap = 1
+nmap <unique> <silent> <C-F5> <Plug>LookupFile
+let g:LookupFile_TagExpr = ''
+let g:LookupFile_MinPatLength = 3
+let g:LookupFile_PreservePatternHistory = 0
+let g:LookupFile_PreserveLastPattern = 0
+let g:LookupFile_AllowNewFiles = 0
+let g:LookupFile_smartcase = 1
+let g:LookupFile_EscCancelsPopup = 1

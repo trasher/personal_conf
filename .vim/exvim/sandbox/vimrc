@@ -1,7 +1,0 @@
-" There options are required by vimwiki.
-set nocompatible
-filetype plugin on
-syntax on
-
-" Load only system and vimwiki's scripts.
-set runtimepath=src,$VIMRUNTIME
