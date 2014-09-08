@@ -81,7 +81,7 @@ function vimentry#write_default_template()
                 \ "",
                 \ "-- ex-gsearch Options:",
                 \ s:write_default( "enable_gsearch", "true", "{ true, false }" ),
-                \ s:write_default( "gsearch_engine", "idutils", "{ idutils, grep }" ),
+                \ s:write_default( "gsearch_engine", "grep", "{ idutils, grep }" ),
                 \ "",
                 \ "-- ex-tags Options:",
                 \ s:write_default( "enable_tags", "true", "{ true, false }" ),
