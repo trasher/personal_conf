@@ -40,7 +40,8 @@ if ! $(grep --exclude-dir 2> /dev/null); then
 else
     GREP_OPTIONS="--color --exclude=\*.svn\* --exclude=\*.pyc --exclude=\*.hg\* --exclude=\*.bzr\* --exclude=\*.git\*"
 fi
-export GREP_OPTIONS
+alias grep="grep $GREP_OPTIONS"
+unset GREP_OPTIONS
 
 #emacs key binding
 bindkey -e
