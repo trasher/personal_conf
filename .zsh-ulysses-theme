@@ -145,7 +145,7 @@ precmd () {
                                               - 2))
 
             # Try to fit in long path and user@host.
-            local prompt_padding="${(l.(($prompt_padding_size )))..─.)}"
+            local prompt_padding="${(l.(($prompt_padding_size ))..─.)}"
             path_prompt="$path_prompt$prompt_padding$vcsstr"
         fi
         path_prompt="$path_prompt$prompt_newline%F{white}"
