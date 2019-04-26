@@ -226,6 +226,7 @@ set lazyredraw " do not redraw while executing macros (much faster)
 set display+=lastline " for easy browse last line with wrap text
 set laststatus=2 " always have status-line
 set titlestring=%t\ (%{expand(\"%:p:.:h\")}/)
+set redrawtime=10000 " prevent syntax hl to be disabled on large files
 
 " set window size (if it's GUI)
 if has('gui_running')
